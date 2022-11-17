@@ -130,7 +130,10 @@ export async function updateTodo(req, res) {
         const updatedTodo = await Todos.findByIdAndUpdate(
             todo_id,
             {
-                $set: body,
+                $set: {
+                    ...body,
+                    updatedAt: Date.now(),
+                },
             },
             { new: true }
         );
