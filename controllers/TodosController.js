@@ -1,5 +1,6 @@
 import Todos from "../models/TodoModel.js";
 
+// Get all todos
 /**
  *
  * @param {import("express").Request} req
@@ -22,6 +23,32 @@ export async function getAllTodos(req, res) {
     }
 }
 
+// Get one todo
+/**
+ *
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export async function getOneTodo(req, res) {
+    const { todo_id } = req.params;
+
+    try {
+        const todo = await Todos.find({ _id: todo_id });
+
+        res.status(200).json({
+            success: true,
+            message: "Successfully fetched Todo",
+            data: todo,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: `An error occured while fetching Todo - ${error.message}`,
+        });
+    }
+}
+
+//Create a single Todo
 /**
  *
  * @param {import("express").Request} req
@@ -49,6 +76,65 @@ export async function createTodo(req, res) {
         res.status(500).json({
             success: false,
             message: `An error occured while creating a Todo - ${error.message}`,
+        });
+    }
+}
+
+//Delete a single Todo
+/**
+ *
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export async function deleteTodo(req, res) {
+    const { todo_id } = req.params;
+
+    try {
+        if (!todo_id) throw new Error("A todo id is required, which todo do you want to delete?");
+
+        const removedTodo = await Todos.findByIdAndRemove(todo_id);
+
+        res.status(204).json({
+            success: true,
+            message: "Successfully deleted a Todo",
+            data: removedTodo,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: `An error occured while deleting this Todo - ${error.message}`,
+        });
+    }
+}
+
+//Update a single Todo
+/**
+ *
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export async function updateTodo(req, res) {
+    const { params, body } = req;
+    const { todo_id } = params;
+    const { title, description } = body;
+
+    try {
+        if (!todo_id) throw new Error("A todo id is required, which todo do you want to update?");
+
+        const updatedTodo = await Todos.findByIdAndUpdate(
+            { _id: todo_id },
+            { ...(title && { title }), ...(description && { description }) }
+        );
+
+        res.status(204).json({
+            success: true,
+            message: "Successfully updated a Todo",
+            data: updatedTodo,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: `An error occured while updating this Todo - ${error.message}`,
         });
     }
 }
