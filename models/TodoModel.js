@@ -9,6 +9,11 @@ const TodoSchema = Schema({
         type: String,
         required: false,
     },
+    completed: {
+        type: Boolean,
+        required: false,
+        default: false,
+    },
     timestamp: {
         type: Date,
         required: false,
